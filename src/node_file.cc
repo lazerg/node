@@ -1870,6 +1870,13 @@ static void RmSync(const FunctionCallbackInfo<Value>& args) {
         permission_denied_error, "rm", message.c_str(), path_c_str);
   }
 
+  auto condition = error.default_error_condition();
+  if (condition.category() == std::generic_category()) {
+    std::string message = error.message();
+    return env->ThrowErrnoException(
+        condition.value(), "rm", message.c_str(), path_c_str);
+  }
+
   std::string message = "Unknown error: " + error.message();
   return env->ThrowErrnoException(
       UV_UNKNOWN, "rm", message.c_str(), path_c_str);
