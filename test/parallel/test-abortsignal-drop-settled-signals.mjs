@@ -257,3 +257,14 @@ it('drops settled signals even when there are listeners', (t, done) => {
     done();
   });
 });
+
+it('drops a composite of a composite once its sources are GCed', async () => {
+  let controller = new AbortController();
+  const innerSignalRef = new WeakRef(AbortSignal.any([controller.signal]));
+  const outerSignalRef = new WeakRef(AbortSignal.any([innerSignalRef.deref()]));
+  outerSignalRef.deref().addEventListener('abort', () => {});
+
+  await gcUntil('inner signal is GCed', () => innerSignalRef.deref() === undefined);
+  controller = null;
+  await gcUntil('outer signal is GCed', () => outerSignalRef.deref() === undefined);
+});
