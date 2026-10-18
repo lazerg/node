@@ -68,3 +68,4 @@ assert.strictEqual(
 
 class MyURL extends URL {}
 assert(util.inspect(new MyURL(url.href)).startsWith('MyURL {'));
+assert.strictEqual(util.inspect(MyURL.prototype), 'URL {}');
