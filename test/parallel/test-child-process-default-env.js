@@ -74,3 +74,6 @@ process.env.TEST_DEFAULT_ENV_LATE = 'late';
   const childEnv = JSON.parse(run());
   assert.strictEqual(childEnv.TEST_DEFAULT_ENV_LATE, 'late');
 }
+// A reassigned process.env is used instead of the real environment.
+process.env = { ...process.env, TEST_DEFAULT_ENV_REASSIGNED: 'yes' };
+check(run(), 'spawnSync reassigned process.env');

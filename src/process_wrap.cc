@@ -346,9 +346,11 @@ class ProcessWrap : public HandleWrap {
 
   // The current environment as ["KEY=value", ...], i.e. what a spawned
   // child inherits by default, produced in one pass over the environment
-  // block instead of one interceptor round trip per variable.
+  // block instead of one interceptor round trip per variable. Returns
+  // undefined if the argument is not the process.env proxy.
   static void GetEnvPairs(const FunctionCallbackInfo<Value>& args) {
     Environment* env = Environment::GetCurrent(args);
+    if (!env->env_proxy_ctor_template()->HasInstance(args[0])) return;
     Local<Array> pairs;
     if (env->env_vars()->Pairs(env->isolate()).ToLocal(&pairs)) {
       args.GetReturnValue().Set(pairs);
